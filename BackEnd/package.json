@@ -1,0 +1,53 @@
+{
+  "devDependencies": {
+    "@babel/core": "^7.20.12",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/register": "^7.18.9",
+    "@hotwired/stimulus": "^3.0.0",
+    "@popperjs/core": "^2.11.6",
+    "@symfony/stimulus-bridge": "^3.2.0",
+    "@symfony/webpack-encore": "^4.3.0",
+    "autoprefixer": "^10.4.13",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^9.1.2",
+    "bootstrap": "^5.2.3",
+    "core-js": "^3.23.0",
+    "datatables.net-buttons": "^2.3.6",
+    "jquery": "^3.6.3",
+    "node-sass": "^8.0.0",
+    "regenerator-runtime": "^0.13.9",
+    "sass-loader": "^13.2.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-notifier": "^1.15.0"
+  },
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "encore": "encore",
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress"
+  },
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "bootstrap-icons": "^1.10.3",
+    "chart.js": "^4.1.2",
+    "compile-sass": "^2.0.0",
+    "datatables.net": "^1.13.1",
+    "datatables.net-buttons-dt": "^2.3.3",
+    "datatables.net-datetime": "^1.2.0",
+    "datatables.net-dt": "^1.13.4",
+    "datatables.net-editor": "^2.0.5",
+    "feather-icons": "^4.29.0",
+    "file-loader": "^6.2.0",
+    "flatpickr": "^4.6.13",
+    "jsvectormap": "^1.5.1",
+    "jszip": "^3.10.1",
+    "pdfmake": "^0.2.7",
+    "simplebar": "^5.3.9",
+    "sweetalert2": "^11.4.8"
+  }
+}

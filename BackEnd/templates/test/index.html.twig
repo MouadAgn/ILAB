@@ -1,0 +1,91 @@
+{# templates/patient/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Tests List{% endblock %}
+
+{% block body %}
+    <h1>Test List</h1>
+
+    <div class="test-form">
+        {{ form_start(test_form, {'attr': {'id': 'testForm'}}) }}
+        {{ form_widget(test_form) }}
+        <button type="button" class="btn btn-primary" id="saveButton">Save</button>
+        {{ form_end(test_form) }}
+    <hr>
+
+    <h2>Tests Table</h2>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>File</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tests-list">
+            {# Tests will be loaded via JavaScript #}
+        </tbody>
+    </table>
+
+    <script>
+        // Load patients via AJAX
+        fetch('{{ path('test_table') }}')
+            .then(response => response.json())
+            .then(data => {
+                const testsList = document.getElementById('tests-list');
+                data.forEach(test => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${test.id}</td>
+                        <td>${test.Name}</td>
+                        <td>${test.Price}</td>
+                        <td><a href="public/test_files/${test.File}">${test.Name}.pdf</a></td>
+                        <td>
+                            <a href="${test.url_show}">View</a>
+                            <a href="${test.url_edit}">Edit</a>
+                            <form action="${test.url_delete}" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    testsList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching patients:', error));
+            
+        document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('saveButton').addEventListener('click', function () {
+        // Get the form element
+        var form = document.getElementById('testForm');
+
+        // Create a FormData object from the form
+        var formData = new FormData(form);
+
+        // Make an AJAX request
+        fetch('{{ path('test_new') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response
+            if (data.success) {
+                alert(data.success); // Show success message
+            } else if (data.error) {
+                alert('Error: ' + data.error); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log any network errors
+            alert('An unexpected error occurred.');
+        });
+    });
+});
+
+    </script>
+{% endblock %}

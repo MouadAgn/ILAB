@@ -6,6 +6,9 @@ use App\Repository\TestRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use DateTimeInterface;
+
 
 #[ORM\Entity(repositoryClass: TestRepository::class)]
 class Test
@@ -23,6 +26,15 @@ class Test
 
     #[ORM\Column(length: 255)]
     private ?string $File = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: false)]
+    private ?DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $deleted_at = null;
 
     #[ORM\OneToMany(mappedBy: 'test', targetEntity: Result::class)]
     private Collection $results;
@@ -67,6 +79,39 @@ class Test
     public function setFile(string $File): static
     {
         $this->File = $File;
+        return $this;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
+        return $this;
+    }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?DateTimeImmutable $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
         return $this;
     }
 

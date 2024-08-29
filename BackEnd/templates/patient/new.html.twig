@@ -1,0 +1,17 @@
+{# templates/patient/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Patient{% endblock %}
+
+{% block body %}
+    <h1>Create New Patient</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">Create</button>
+    {{ form_end(form) }}
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+{% endblock %}

@@ -65,7 +65,7 @@ class UserController extends AbstractController
     }
 
 
-    #[Route('/api/register', name: 'api_register', methods: ['POST'])]
+    #[Route('/api/', name: 'api_register', methods: ['GET','POST'])]
     public function register(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);

@@ -1,0 +1,112 @@
+{# templates/patient/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Roles List{% endblock %}
+
+{% block body %}
+    <h1>Role List</h1>
+
+    <div class="role-form">
+        {{ form_start(role_form, {'attr': {'id': 'roleForm'}}) }}
+        {{ form_widget(role_form) }}
+        <button type="button" class="btn btn-primary" id="saveRoleButton">Save</button>
+        {{ form_end(role_form) }}
+    <hr>
+
+    <h2>Roles Table</h2>
+    <table id="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="roles-list">
+            {# Roles will be loaded via JavaScript #}
+        </tbody>
+    </table>
+
+    <script>
+        // Load patients via AJAX
+        fetch('{{ path('role_table') }}')
+            .then(response => response.json())
+            .then(data => {
+                const rolesList = document.getElementById('roles-list');
+                data.forEach(role => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${role.id}</td>
+                        <td>${role.Name}</td>
+                        <td>
+                            <a href="${role.url_show}">View</a>
+                            <button class="edit-role-button" data-id="${role.id}">Edit</button> 
+                            <form action="${role.url_delete}" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    rolesList.appendChild(row);
+                });
+                
+                 // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-role-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const roleId = this.getAttribute('data-id');
+                        fetch(`{{ path('role_show', {'id': 0}) }}`.replace('0', roleId))
+                            .then(response => response.json())
+                            .then(role => {
+                                // Populate the form with the fetched role data
+                                document.querySelector('#roleForm input[name="role[id]"]').value = role.id;
+                                document.querySelector('#roleForm input[name="role[Name]"]').value = role.Name;
+                                // Set the form action to edit
+                                document.getElementById('saveRoleButton').setAttribute('data-id', roleId);
+                            })
+                            .catch(error => console.error('Error fetching role:', error));
+                    });
+                });
+            })
+            .catch(error => console.error('Error fetching roles:', error));
+            
+        document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('saveRoleButton').addEventListener('click', function () {
+        // Get the form element
+        var form = document.getElementById('roleForm');
+
+        // Create a FormData object from the form
+        var formData = new FormData(form);
+
+        var roleId = document.getElementById('role_id').value;
+        if(roleId) {
+            var url = '{{ path('role_edit', {'id': 0}) }}'.replace('0', roleId);
+        } else {
+            var url = '{{ path('role_new') }}';
+        }
+        
+
+        // Make an AJAX request
+        fetch( url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response
+            if (data.success) {
+                alert(data.success); // Show success message
+            } else if (data.error) {
+                alert('Error: ' + data.error); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log any network errors
+            alert('An unexpected error occurred.');
+        });
+    });
+});
+
+    </script>
+{% endblock %}

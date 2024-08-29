@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment Details{% endblock %}
+
+{% block body %}
+    <h1>Appointment Details</h1>
+
+    <p>Date and Time: {{ appointment.DateTimeOfAppointment|date('Y-m-d H:i:s') }}</p>
+    <p>Type of Test: {{ appointment.TypeOfTest }}</p>
+    <p>Confirmation: {{ appointment.Confirmation }}</p>
+    <p>Doctor: {{ appointment.doctor.name }}</p>
+    <p>Patient: {{ appointment.patient.FirstName }}</p>
+
+    <a href="{{ path('appointment_index') }}">Back to list</a>
+{% endblock %}
