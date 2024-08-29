@@ -1,0 +1,17 @@
+{# templates/role/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Role{% endblock %}
+
+{% block body %}
+    <h1>Create New Role</h1>
+
+    {{ form_start(role_form) }}
+        {{ form_widget(role_form) }}
+        <button class="btn">Create</button>
+    {{ form_end(role_form) }}
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+{% endblock %}

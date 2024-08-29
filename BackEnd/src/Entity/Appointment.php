@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\AppointmentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 #[ORM\Entity(repositoryClass: AppointmentRepository::class)]
 class Appointment
@@ -17,19 +19,29 @@ class Appointment
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $DateTimeOfAppointment = null;
 
-    #[ORM\Column]
-    private ?int $TypeOfTest = null;
+    #[ORM\ManyToOne(targetEntity: Test::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Test $TypeOfTest = null;
 
     #[ORM\Column]
-    private ?int $Confirmation = null;
+    private ?string $Confirmation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'appointments')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $doctor = null;
 
-    #[ORM\ManyToOne(inversedBy: 'appointments')]
+    #[ORM\ManyToOne(targetEntity: Patient::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?Patient $patient = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $deletedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updated_at = null;
 
     public function getId(): ?int
     {
@@ -47,23 +59,23 @@ class Appointment
         return $this;
     }
 
-    public function getTypeOfTest(): ?int
+    public function getTypeOfTest(): ?Test
     {
         return $this->TypeOfTest;
     }
 
-    public function setTypeOfTest(int $TypeOfTest): static
+    public function setTypeOfTest(?Test $TypeOfTest): static
     {
         $this->TypeOfTest = $TypeOfTest;
         return $this;
     }
 
-    public function getConfirmation(): ?int
+    public function getConfirmation(): ?string
     {
         return $this->Confirmation;
     }
 
-    public function setConfirmation(int $Confirmation): static
+    public function setConfirmation(string $Confirmation): static
     {
         $this->Confirmation = $Confirmation;
         return $this;
@@ -88,6 +100,44 @@ class Appointment
     public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTimeInterface
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTimeInterface $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return null !== $this->deletedAt;
+    }
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
         return $this;
     }
 }

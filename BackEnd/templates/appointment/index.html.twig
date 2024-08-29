@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Appointment List{% endblock %}
+
+{% block body %}
+    <h1>Appointment List</h1>
+
+        <div class="appointment-form">
+        {{ form_start(appointment_form, {'attr': {'id': 'appointmentForm'}}) }}
+        {{ form_widget(appointment_form) }}
+        <button type="button" class="btn btn-primary" id="saveRoleButton">Save</button>
+        {{ form_end(appointment_form) }}
+    </div>
+
+    <hr>
+
+    <h2>Appointments Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date and Time</th>
+                <th>Type of Test</th>
+                <th>Confirmation</th>
+                <th>Doctor</th>
+                <th>Patient</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="appointments-list">
+            {# Appountments will be loaded via JS #}
+        </tbody>
+    </table>
+
+
+     <script>
+        // Load patients via AJAX
+        fetch('{{ path('appointment_table') }}')
+            .then(response => response.json())
+            .then(data => {
+                const appointmentsList = document.getElementById('appointments-list');
+                data.forEach(appointment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${appointment.id}</td>
+                        <td>${appointment.DateTimeOfAppointment}</td>
+                        <td>${appointment.TypeOfTest}</td>
+                        <td>${appointment.Confirmation}</td>
+                        <td>${appointment.Doctor}</td>
+                        <td>${appointment.Patient}</td>
+                        <td>
+                            <a href="${appointment.url_show}">View</a>
+                            <a href="${appointment.url_edit}">Edit</a>
+                            <form action="${appointment.url_delete}" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    appointmentsList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching appointments:', error));
+          document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('saveRoleButton').addEventListener('click', function () {
+        // Get the form element
+        var form = document.getElementById('appointmentForm');
+
+        // Create a FormData object from the form
+        var formData = new FormData(form);
+
+        // Make an AJAX request
+        fetch('{{ path('appointment_new') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response
+            if (data.success) {
+                alert(data.success); // Show success message
+            } else if (data.error) {
+                alert('Error: ' + data.error); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log any network errors
+            alert('An unexpected error occurred.');
+        });
+    });
+});
+    </script>
+
+
+
+{% endblock %}

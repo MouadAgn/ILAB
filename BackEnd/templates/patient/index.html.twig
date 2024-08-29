@@ -1,0 +1,150 @@
+{# templates/patient/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient List{% endblock %}
+
+{% block body %}
+    <h1>Patient List</h1>
+
+    <div class="patient-form">
+        {{ form_start(patient_form, {'attr': {'id': 'patientForm'}}) }}
+        {{ form_widget(patient_form) }}
+        <button type="button" class="btn btn-primary" id="saveRoleButton">Save</button>
+        {{ form_end(patient_form) }}
+    </div>
+
+    <hr>
+
+    <h2>Patients Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID Number</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Phone Number</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="patients-list">
+            {# Patients will be loaded via JavaScript #}
+        </tbody>
+    </table>
+
+    <script>
+        // Load patients via AJAX
+        fetch('{{ path('patient_table') }}')
+            .then(response => response.json())
+            .then(data => {
+                const patientsList = document.getElementById('patients-list');
+                data.forEach(patient => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${patient.id_number}</td>
+                        <td>${patient.FirstName}</td>
+                        <td>${patient.LastName}</td>
+                        <td>${patient.Email}</td>
+                        <td>${patient.DateOfBirth}</td>
+                        <td>${patient.Gender}</td>
+                        <td>${patient.PhoneNumber}</td>
+                        <td>
+                            <a href="${patient.url_show}">View</a>
+                            <button class="edit-patient-button" data-id="${patient.id}">Edit</button> 
+                            <form action="${patient.url_delete}" method="POST" style="display:inline;">
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    patientsList.appendChild(row);
+                });
+
+                                 // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-patient-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const patientId = this.getAttribute('data-id');
+                        fetch(`{{ path('patient_show', {'id': 0}) }}`.replace('0', patientId))
+                            .then(response => response.json())
+                            .then(patient => {
+                                // Populate the form with the fetched patient data
+                                document.querySelector('#patientForm input[name="patient[id]"]').value = patient.id;
+                                document.querySelector('#patientForm input[name="patient[id_number]"]').value = patient.idNumber;
+                                document.querySelector('#patientForm input[name="patient[FirstName]"]').value = patient.FirstName;
+                                document.querySelector('#patientForm input[name="patient[LastName]"]').value = patient.LastName;
+                                document.querySelector('#patientForm input[name="patient[Email]"]').value = patient.Email;
+                                // Extracting and formatting DateOfBirth
+                                const dateOfBirthData = patient.DateOfBirth;
+                                if (dateOfBirthData && dateOfBirthData.timestamp) {
+                                    const date = new Date(dateOfBirthData.timestamp * 1000); // Convert timestamp to milliseconds
+                                    const year = date.getUTCFullYear();
+                                    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+                                    const day = String(date.getUTCDate()).padStart(2, '0');
+                                    const formattedDate = `${year}-${month}-${day}`;
+                                    
+                                    document.querySelector('#patientForm input[name="patient[DateOfBirth]"]').value = formattedDate;
+                                }
+                                //gender
+                                const gender = patient.Gender;
+                                if (gender) {
+                                    // If gender is a radio button group
+                                    const genderRadio = document.querySelector(`#patientForm input[name="patient[Gender]"][value="${gender}"]`);
+                                    if (genderRadio) {
+                                        genderRadio.checked = true;
+                                    }
+                                }
+                                document.querySelector('#patientForm input[name="patient[PhoneNumber]"]').value = patient.PhoneNumber;
+                                document.getElementById('saveRoleButton').setAttribute('data-id', patientId);
+                            })
+                            .catch(error => console.error('Error fetching patient:', error));
+                    });
+                });
+            
+            })
+            
+            .catch(error => console.error('Error fetching patients:', error));
+
+
+          document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('saveRoleButton').addEventListener('click', function () {
+        // Get the form element
+        var form = document.getElementById('patientForm');
+
+        // Create a FormData object from the form
+        var formData = new FormData(form);
+
+        var patientId = document.getElementById('patient_id').value;
+        if(patientId) {
+            var url = '{{ path('patient_edit', {'id': 0}) }}'.replace('0', patientId);
+            console.log(url);
+        } else {
+            var url = '{{ path('patient_new') }}';
+            console.log(url);
+        }
+
+        // Make an AJAX request
+        fetch(url , {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response
+            if (data.success) {
+                alert(data.success); // Show success message
+            } else if (data.error) {
+                alert('Error: ' + data.error); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error); // Log any network errors
+            alert('An unexpected error occurred.');
+        });
+    });
+});
+    </script>
+{% endblock %}

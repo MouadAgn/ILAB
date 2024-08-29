@@ -3,11 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\RoleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 #[ORM\Entity(repositoryClass: RoleRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Role
 {
     #[ORM\Id]
@@ -18,13 +19,14 @@ class Role
     #[ORM\Column(length: 255)]
     private ?string $Name = null;
 
-    #[ORM\OneToMany(mappedBy: 'role', targetEntity: User::class)]
-    private Collection $users;
+    #[ORM\Column(type: "datetime_immutable", nullable: false)]
+    private ?DateTimeImmutable $created_at = null;
 
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $deleted_at = null;
 
     public function getId(): ?int
     {
@@ -42,31 +44,49 @@ class Role
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
+    public function getCreatedAt(): ?DateTimeInterface
     {
-        return $this->users;
+        return $this->created_at;
     }
 
-    public function addUser(User $user): static
+    public function setCreatedAt(DateTimeImmutable $created_at): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setRole($this);
-        }
+        $this->created_at = $created_at;
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function getUpdatedAt(): ?DateTimeInterface
     {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getRole() === $this) {
-                $user->setRole(null);
-            }
-        }
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
         return $this;
     }
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?DateTimeImmutable $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
+        return $this;
+    }
+
+    /*#[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->created_at = new DateTimeImmutable();
+        $this->updated_at = new DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updated_at = new DateTimeImmutable();
+    }*/
 }

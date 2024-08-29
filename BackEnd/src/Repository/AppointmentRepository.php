@@ -16,6 +16,31 @@ class AppointmentRepository extends ServiceEntityRepository
         parent::__construct($registry, Appointment::class);
     }
 
+    public function save(Appointment $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Appointment $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function findAllAppointments(): array
+    {
+       $q = $this->createQueryBuilder('a')
+            ->leftJoin('a.TypeOfTest', 't');
+        return $q;
+    }
+
     //    /**
     //     * @return Appointment[] Returns an array of Appointment objects
     //     */

@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use DateTimeImmutable;
+use DateTimeInterface;
+
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
 class Patient
@@ -15,6 +18,9 @@ class Patient
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(length: 55)]
+    private ?string $id_number = null;
 
     #[ORM\Column(length: 255)]
     private ?string $FirstName = null;
@@ -25,23 +31,30 @@ class Patient
     #[ORM\Column(length: 255)]
     private ?string $Email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $Password = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $DateOfBirth = null;
 
-    #[ORM\Column]
-    private ?int $Gender = null;
+    #[ORM\Column(length: 255)]
+    private ?string $Gender = null;
 
     #[ORM\Column]
     private ?int $PhoneNumber = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $created_at = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $updated_at = null;
+
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $deleted_at = null;
 
     #[ORM\OneToMany(mappedBy: 'patient', targetEntity: Appointment::class)]
     private Collection $appointments;
 
     #[ORM\OneToMany(mappedBy: 'patient', targetEntity: Result::class)]
     private Collection $results;
+
 
     public function __construct()
     {
@@ -52,6 +65,17 @@ class Patient
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdNumber(): ?string
+    {
+        return $this->id_number;
+    }
+
+    public function setIdNumber(string $id_number): static
+    {
+        $this->id_number = $id_number;
+        return $this;
     }
 
     public function getFirstName(): ?string
@@ -87,17 +111,6 @@ class Patient
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->Password;
-    }
-
-    public function setPassword(string $Password): static
-    {
-        $this->Password = $Password;
-        return $this;
-    }
-
     public function getDateOfBirth(): ?\DateTimeInterface
     {
         return $this->DateOfBirth;
@@ -109,12 +122,12 @@ class Patient
         return $this;
     }
 
-    public function getGender(): ?int
+    public function getGender(): ?string
     {
         return $this->Gender;
     }
 
-    public function setGender(int $Gender): static
+    public function setGender(string $Gender): self
     {
         $this->Gender = $Gender;
         return $this;
@@ -184,4 +197,44 @@ class Patient
         }
         return $this;
     }
+    
+
+    public function getDeletedAt(): ?DateTimeInterface
+    {
+        return $this->deleted_at;
+    }
+
+    public function setDeletedAt(?DateTimeImmutable $deleted_at): static
+    {
+        $this->deleted_at = $deleted_at;
+        return $this;
+    }
+
+    /*public function isDeleted(): bool
+    {
+        return null !== $this->deletedAt;
+    }*/
+
+    public function getCreatedAt(): ?DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(DateTimeImmutable $created_at): static
+    {
+        $this->created_at = $created_at;
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?DateTimeInterface
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(DateTimeImmutable $updated_at): static
+    {
+        $this->updated_at = $updated_at;
+        return $this;
+    }
+    
 }

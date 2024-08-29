@@ -1,0 +1,19 @@
+{# templates/patient/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Patient{% endblock %}
+
+{% block body %}
+    <h1>Edit Patient</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn">Update</button>
+    {{ form_end(form) }}
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <a href="{{ path('patient_index') }}">Back to list</a>
+{% endblock %}
