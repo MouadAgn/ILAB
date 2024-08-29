@@ -1,0 +1,91 @@
+/* Patient.css */
+
+/* Styles des boutons "Rendez-vous" et "Traitements" */
+.patient-container button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.patient-container button:hover {
+    opacity: 0.8;
+}
+
+
+.patient-container button a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Style spécifique pour le bouton "Rendez-vous" */
+.patient-container button.rendezvous {
+    background-color: red;
+}
+
+/* Style spécifique pour le bouton "Traitements" */
+.patient-container button.traitements {
+    background-color: blue;
+}
+
+/* Style pour les boutons */
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px; /* Espacement entre les boutons */
+}
+
+/* Style pour les boutons au survol */
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Style spécifique pour le bouton "Cliquer Ici pour ajouter un traitement" */
+button.add-treatment-button {
+    margin-bottom: 10px; /* Espacement sous le bouton */
+}
+
+/* Style spécifique pour le bouton "Revenir à la liste des Patients" */
+button.back-to-patients-button {
+    background-color: #dc3545; /* Couleur de fond différente */
+}
+
+/* Style pour les liens à l'intérieur des boutons */
+button a {
+    color: #fff; /* Couleur du texte */
+    text-decoration: none; /* Suppression du soulignement */
+}
+
+.add-patient-button{
+    margin-bottom: 100px;
+    margin-left: 600px;
+}
+
+.search-bar {
+    margin: 20px auto; /* Marge en haut et en bas, centré horizontalement */
+    max-width: 500px; /* Largeur maximale de la barre de recherche */
+}
+
+.search-input {
+    padding: 10px; /* Espacement autour du texte dans la barre de recherche */
+    width: 100%; /* Largeur de la barre de recherche */
+    border: 2px solid #ccc; /* Bordure de la barre de recherche */
+    border-radius: 5px; /* Arrondi des coins de la barre de recherche */
+    box-sizing: border-box; /* Inclut la bordure et le rembourrage dans la largeur totale */
+}
+
+.search-icon {
+    padding: 10px; /* Espacement autour de l'icône de recherche */
+    background-color: #ccc; /* Couleur de fond de l'icône de recherche */
+    border: none; /* Supprime la bordure de l'icône de recherche */
+    border-radius: 0 5px 5px 0; /* Arrondi uniquement du coin droit de l'icône de recherche */
+    cursor: pointer; /* Curseur pointer pour indiquer que l'icône est cliquable */
+}

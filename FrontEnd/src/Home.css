@@ -1,0 +1,85 @@
+/* Reset des styles par défaut */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif; /* Police générique */
+  }
+  
+  header {
+    background-color: #7986c7;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo a {
+    font-size: 1.8em; /* Taille de police augmentée */
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    display: flex;
+  }
+  
+  nav ul li {
+    margin-right: 20px;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1em; /* Taille de police augmentée */
+  }
+  
+  /* Styles pour la section hero */
+  .hero {
+    background-color: #f8f9fa;
+    padding: 100px 20px;
+    text-align: center;
+  }
+  
+  /* Styles pour le header */
+ 
+  .hero-content h1 {
+    font-size: 3em; /* Taille de police augmentée */
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .hero-content p {
+    font-size: 1.4em; /* Taille de police augmentée */
+    color: #666;
+    margin-bottom: 30px;
+  }
+  
+  .btn {
+    background-color: #7986c7;
+    color: #fff;
+    padding: 12px 24px; /* Ajustement de la taille du bouton */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.2em; /* Taille de police augmentée */
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: #7986c7;
+  }
+  
+  /* Styles pour le footer */
+  footer {
+    background-color: #7986c7;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }

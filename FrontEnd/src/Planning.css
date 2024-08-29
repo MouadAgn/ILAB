@@ -1,0 +1,92 @@
+table {
+    border-collapse: collapse;
+    border: 2px solid rgb(140 140 140);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    width: 80%;
+    margin: 50px auto;
+}
+  
+caption {
+    caption-side: bottom;
+    padding: 10px;
+    font-weight: bold;
+}
+
+thead, tfoot {
+    background-color: rgb(228 240 245);
+}
+
+th, td {
+    border: 1px solid rgb(160 160 160);
+    padding: 8px 10px;
+}
+
+td:last-of-type {
+    text-align: center;
+}
+
+tbody > tr:nth-of-type(even) {
+    background-color: rgb(237 238 242);
+}
+
+tfoot th {
+    text-align: right;
+}
+
+tfoot td {
+    font-weight: bold;
+}
+
+.patient-link {
+    color: #007bff; /* Couleur du lien */
+    text-decoration: none; /* Supprime les soulignements par défaut */
+    transition: color 0.3s ease; /* Animation de transition de couleur */
+}
+
+.patient-link:hover {
+    color: #0056b3; /* Couleur du lien au survol */
+}
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loader {
+    border: 8px solid #f3f3f3; /* Gris très clair */
+    border-top: 8px solid #3498db; /* Bleu */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.titre{
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333; /* Couleur du texte */
+    margin-bottom: 20px; 
+}
+
+.add-patient-button {
+    display: inline-block; /* Permettre au bouton de rester sur la même ligne */
+    margin-top: 20px; /* Ajouter un espacement en haut du bouton */
+    padding: 10px 20px; /* Ajouter un rembourrage pour améliorer l'apparence */
+    background-color: #007bff; /* Couleur de fond du bouton */
+    color: #fff; /* Couleur du texte */
+    text-decoration: none; /* Supprimer les soulignements par défaut */
+    border-radius: 5px; /* Ajouter des coins arrondis */
+    transition: background-color 0.3s ease; /* Animation de transition de couleur de fond */
+}
+
+.add-patient-button:hover {
+    background-color: #0056b3; /* Couleur de fond du bouton au survol */
+}

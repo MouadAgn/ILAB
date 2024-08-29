@@ -1,0 +1,28 @@
+/* Profile.css */
+
+.profil-container {
+  max-width: 800px;
+  margin: 70px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profil-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.profil-info {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.loading-message {
+  font-size: 18px;
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+}
