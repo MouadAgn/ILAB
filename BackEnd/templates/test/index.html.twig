@@ -1,36 +1,53 @@
-{# templates/patient/index.html.twig #}
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Tests List{% endblock %}
 
 {% block body %}
-    <h1>Test List</h1>
+    <div class="container mt-4">
+        <h1 class="mb-4">Test List</h1>
 
-    <div class="test-form">
-        {{ form_start(test_form, {'attr': {'id': 'testForm'}}) }}
-        {{ form_widget(test_form) }}
-        <button type="button" class="btn btn-primary" id="saveButton">Save</button>
-        {{ form_end(test_form) }}
-    <hr>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#testModal" id="newTestButton">New Test</button>
 
-    <h2>Tests Table</h2>
-    <table id="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>File</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="tests-list">
-            {# Tests will be loaded via JavaScript #}
-        </tbody>
-    </table>
+        <table id="table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>File</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tests-list">
+                {# Tests will be loaded via JavaScript #}
+            </tbody>
+        </table>
+
+        {# Modal for New/Edit Test #}
+        <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="testModalLabel">Test Form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form_start(test_form, {'attr': {'id': 'testForm'}}) }}
+                        {{ form_widget(test_form) }}
+                        {{ form_end(test_form) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveTestButton">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Load patients via AJAX
+        // Load tests via AJAX
         fetch('{{ path('test_table') }}')
             .then(response => response.json())
             .then(data => {
@@ -41,51 +58,73 @@
                         <td>${test.id}</td>
                         <td>${test.Name}</td>
                         <td>${test.Price}</td>
-                        <td><a href="public/test_files/${test.File}">${test.Name}.pdf</a></td>
+                        <td><a href="public/test_files/${test.File}" target="_blank">${test.Name}.pdf</a></td>
                         <td>
-                            <a href="${test.url_show}">View</a>
-                            <a href="${test.url_edit}">Edit</a>
+                            <button class="btn btn-info btn-sm edit-test-button" data-id="${test.id}">Edit</button>
                             <form action="${test.url_delete}" method="POST" style="display:inline;">
-                                <button type="submit">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
                     `;
                     testsList.appendChild(row);
                 });
+
+                // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-test-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const testId = this.getAttribute('data-id');
+                        fetch(`{{ path('test_show', {'id': 0}) }}`.replace('0', testId))
+                            .then(response => response.json())
+                            .then(test => {
+                                // Populate the form with the fetched test data
+                                document.querySelector('#testForm input[name="test[id]"]').value = test.id;
+                                document.querySelector('#testForm input[name="test[Name]"]').value = test.Name;
+                                document.querySelector('#testForm input[name="test[Price]"]').value = test.Price;
+                                // Show the modal
+                                new bootstrap.Modal(document.getElementById('testModal')).show();
+                                // Set the form action to edit
+                                document.getElementById('saveTestButton').setAttribute('data-id', testId);
+                            })
+                            .catch(error => console.error('Error fetching test:', error));
+                    });
+                });
             })
-            .catch(error => console.error('Error fetching patients:', error));
-            
-        document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('saveButton').addEventListener('click', function () {
-        // Get the form element
-        var form = document.getElementById('testForm');
-
-        // Create a FormData object from the form
-        var formData = new FormData(form);
-
-        // Make an AJAX request
-        fetch('{{ path('test_new') }}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response
-            if (data.success) {
-                alert(data.success); // Show success message
-            } else if (data.error) {
-                alert('Error: ' + data.error); // Show error message
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error); // Log any network errors
-            alert('An unexpected error occurred.');
+            .catch(error => console.error('Error fetching tests:', error));
+        
+        document.getElementById('newTestButton').addEventListener('click', function () {
+            // Clear the form for a new test
+            document.querySelector('#testForm').reset();
+            document.getElementById('saveTestButton').removeAttribute('data-id');
         });
-    });
-});
+        
+        document.getElementById('saveTestButton').addEventListener('click', function () {
+            var form = document.getElementById('testForm');
+            var formData = new FormData(form);
 
+            var testId = this.getAttribute('data-id');
+            var url = testId ? '{{ path('test_edit', {'id': 'TEST_ID'}) }}'.replace('TEST_ID', testId) : '{{ path('test_new') }}';
+
+            // Make an AJAX request
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.success);
+                    location.reload(); // Reload to see the updated list
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred.');
+            });
+        });
     </script>
 {% endblock %}

@@ -4,31 +4,48 @@
 {% block title %}Roles List{% endblock %}
 
 {% block body %}
-    <h1>Role List</h1>
+    <div class="container mt-4">
+        <h1 class="mb-4">Role List</h1>
 
-    <div class="role-form">
-        {{ form_start(role_form, {'attr': {'id': 'roleForm'}}) }}
-        {{ form_widget(role_form) }}
-        <button type="button" class="btn btn-primary" id="saveRoleButton">Save</button>
-        {{ form_end(role_form) }}
-    <hr>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#roleModal" id="newRoleButton">New Role</button>
 
-    <h2>Roles Table</h2>
-    <table id="table">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="roles-list">
-            {# Roles will be loaded via JavaScript #}
-        </tbody>
-    </table>
+        <table id="table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="roles-list">
+                {# Roles will be loaded via JavaScript #}
+            </tbody>
+        </table>
+
+        {# Modal for New/Edit Role #}
+        <div class="modal fade" id="roleModal" tabindex="-1" aria-labelledby="roleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="roleModalLabel">Role Form</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        {{ form_start(role_form, {'attr': {'id': 'roleForm'}}) }}
+                        {{ form_widget(role_form) }}
+                        {{ form_end(role_form) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="saveRoleButton">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Load patients via AJAX
+        // Load roles via AJAX
         fetch('{{ path('role_table') }}')
             .then(response => response.json())
             .then(data => {
@@ -39,17 +56,16 @@
                         <td>${role.id}</td>
                         <td>${role.Name}</td>
                         <td>
-                            <a href="${role.url_show}">View</a>
-                            <button class="edit-role-button" data-id="${role.id}">Edit</button> 
+                            <button class="btn btn-info btn-sm edit-role-button" data-id="${role.id}">Edit</button>
                             <form action="${role.url_delete}" method="POST" style="display:inline;">
-                                <button type="submit">Delete</button>
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                             </form>
                         </td>
                     `;
                     rolesList.appendChild(row);
                 });
-                
-                 // Add event listeners to edit buttons
+
+                // Add event listeners to edit buttons
                 document.querySelectorAll('.edit-role-button').forEach(button => {
                     button.addEventListener('click', function() {
                         const roleId = this.getAttribute('data-id');
@@ -59,6 +75,8 @@
                                 // Populate the form with the fetched role data
                                 document.querySelector('#roleForm input[name="role[id]"]').value = role.id;
                                 document.querySelector('#roleForm input[name="role[Name]"]').value = role.Name;
+                                // Show the modal
+                                new bootstrap.Modal(document.getElementById('roleModal')).show();
                                 // Set the form action to edit
                                 document.getElementById('saveRoleButton').setAttribute('data-id', roleId);
                             })
@@ -67,46 +85,41 @@
                 });
             })
             .catch(error => console.error('Error fetching roles:', error));
-            
-        document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('saveRoleButton').addEventListener('click', function () {
-        // Get the form element
-        var form = document.getElementById('roleForm');
-
-        // Create a FormData object from the form
-        var formData = new FormData(form);
-
-        var roleId = document.getElementById('role_id').value;
-        if(roleId) {
-            var url = '{{ path('role_edit', {'id': 0}) }}'.replace('0', roleId);
-        } else {
-            var url = '{{ path('role_new') }}';
-        }
         
-
-        // Make an AJAX request
-        fetch( url, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response
-            if (data.success) {
-                alert(data.success); // Show success message
-            } else if (data.error) {
-                alert('Error: ' + data.error); // Show error message
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error); // Log any network errors
-            alert('An unexpected error occurred.');
+        document.getElementById('newRoleButton').addEventListener('click', function () {
+            // Clear the form for a new role
+            document.querySelector('#roleForm').reset();
+            document.getElementById('saveRoleButton').removeAttribute('data-id');
         });
-    });
-});
+        
+        document.getElementById('saveRoleButton').addEventListener('click', function () {
+            var form = document.getElementById('roleForm');
+            var formData = new FormData(form);
 
+            var roleId = this.getAttribute('data-id');
+            var url = roleId ? '{{ path('role_edit', {'id': 'ROLE_ID'}) }}'.replace('ROLE_ID', roleId) : '{{ path('role_new') }}';
+
+            // Make an AJAX request
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.success);
+                    location.reload(); // Reload to see the updated list
+                } else if (data.error) {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An unexpected error occurred.');
+            });
+        });
     </script>
 {% endblock %}

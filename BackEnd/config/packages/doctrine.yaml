@@ -24,6 +24,10 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: true
+        filters:
+            soft_delete:
+                class: App\Doctrine\SoftDeleteFilter
+                enabled: true
 
 when@test:
     doctrine:

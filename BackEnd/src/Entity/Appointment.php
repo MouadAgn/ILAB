@@ -35,7 +35,7 @@ class Appointment
     private ?Patient $patient = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $deletedAt = null;
+    private ?\DateTimeInterface $deleted_at = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_at = null;
@@ -105,18 +105,18 @@ class Appointment
 
     public function getDeletedAt(): ?\DateTimeInterface
     {
-        return $this->deletedAt;
+        return $this->deleted_at;
     }
 
-    public function setDeletedAt(?\DateTimeInterface $deletedAt): static
+    public function setDeletedAt(?\DateTimeInterface $deleted_at): static
     {
-        $this->deletedAt = $deletedAt;
+        $this->deleted_at = $deleted_at;
         return $this;
     }
 
     public function isDeleted(): bool
     {
-        return null !== $this->deletedAt;
+        return null !== $this->deleted_at;
     }
 
     public function getCreatedAt(): ?DateTimeInterface

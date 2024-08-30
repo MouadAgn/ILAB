@@ -1,20 +1,141 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserController!{% endblock %}
+{% block title %}User List{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <h1>User List</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <div class="user-form">
+        {{ form_start(user_form, {'attr': {'id': 'userForm'}}) }}
+        {{ form_widget(user_form) }}
+        <button type="button" class="btn btn-primary" id="saveUserButton">Save</button>
+        {{ form_end(user_form) }}
+    </div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/aough/OneDrive/Bureau/ILAB/BackEnd/src/Controller/UserController.php</code></li>
-        <li>Your template at <code>C:/Users/aough/OneDrive/Bureau/ILAB/BackEnd/templates/user/index.html.twig</code></li>
-    </ul>
-</div>
+    <hr>
+
+    <h2>Users Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="users-list">
+            {# Users will be loaded via JavaScript #}
+        </tbody>
+    </table>
+
+    <script>
+        // Load users via AJAX
+        fetch('{{ path('api_list_users') }}')
+            .then(response => response.json())
+            .then(data => {
+                const usersList = document.getElementById('users-list');
+                data.forEach(user => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>${user.role}</td>
+                        <td>${user.createdAt}</td>
+                        <td>${user.updatedAt || ''}</td>
+                        <td>
+                            <button class="edit-user-button" data-id="${user.id}">Edit</button> 
+                            <button class="delete-user-button" data-id="${user.id}">Delete</button>
+                        </td>
+                    `;
+                    usersList.appendChild(row);
+                });
+
+                // Add event listeners to edit buttons
+                document.querySelectorAll('.edit-user-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-id');
+                        fetch(`{{ path('api_update_user', {'id': 0}) }}`.replace('0', userId), {
+                            method: 'GET'
+                        })
+                        .then(response => response.json())
+                        .then(user => {
+                            // Populate the form with the fetched user data
+                            document.querySelector('#userForm input[name="user[id]"]').value = user.id;
+                            document.querySelector('#userForm input[name="user[firstName]"]').value = user.firstName;
+                            document.querySelector('#userForm input[name="user[lastName]"]').value = user.lastName;
+                            document.querySelector('#userForm input[name="user[email]"]').value = user.email;
+                            document.querySelector('#userForm select[name="user[role]"]').value = user.role; // Assuming role is a select
+                            document.getElementById('saveUserButton').setAttribute('data-id', userId);
+                        })
+                        .catch(error => console.error('Error fetching user:', error));
+                    });
+                });
+
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-user-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const userId = this.getAttribute('data-id');
+                        fetch(`{{ path('api_soft_delete_user', {'id': 0}) }}`.replace('0', userId), {
+                            method: 'DELETE'
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.message === 'User soft deleted successfully') {
+                                alert(data.message);
+                                location.reload(); // Reload to see changes
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error deleting user:', error));
+                    });
+                });
+
+            })
+            .catch(error => console.error('Error fetching users:', error));
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('saveUserButton').addEventListener('click', function () {
+                // Get the form element
+                var form = document.getElementById('userForm');
+
+                // Create a FormData object from the form
+                var formData = new FormData(form);
+
+                var userId = document.querySelector('#userForm input[name="user[id]"]').value;
+                var url = userId ? '{{ path('api_update_user', {'id': 0}) }}'.replace('0', userId) : '{{ path('api_register') }}';
+
+                // Make an AJAX request
+                fetch(url , {
+                    method: userId ? 'PUT' : 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response
+                    if (data.message) {
+                        alert(data.message); // Show success message
+                        location.reload(); // Reload to see changes
+                    } else if (data.error) {
+                        alert('Error: ' + data.error); // Show error message
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Log any network errors
+                    alert('An unexpected error occurred.');
+                });
+            });
+        });
+    </script>
 {% endblock %}

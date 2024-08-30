@@ -8,6 +8,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use DateTimeImmutable;
+use DateTimeInterface;
+
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -44,20 +48,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'doctor', targetEntity: Appointment::class)]
     private Collection $appointments;
 
-    #[ORM\Column(type: 'datetime')]
-    private ?\DateTimeInterface $created_at = null;
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $created_at = null;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $updated_at = null;
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $updated_at = null;
 
-    #[ORM\Column(type: 'smallint', options: ['default' => 0])]
-    private int $ifdeleted = 0;
+    #[ORM\Column(type: "datetime_immutable", nullable: true)]
+    private ?DateTimeImmutable $deleted_at = null;
 
-    public function __construct()
-    {
-        $this->appointments = new ArrayCollection();
-        $this->created_at = new \DateTime();
-    }
 
     public function getId(): ?int
     {
@@ -188,37 +187,38 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt(): ?DateTimeInterface
     {
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): self
+    public function setCreatedAt(DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?DateTimeInterface
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updated_at): self
+    public function setUpdatedAt(DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
         return $this;
     }
 
-    public function getIfdeleted(): int
+    public function getDeletedAt(): ?DateTimeInterface
     {
-        return $this->ifdeleted;
+        return $this->deleted_at;
     }
 
-    public function setIfdeleted(int $ifdeleted): self
+    public function setDeletedAt(?DateTimeImmutable $deleted_at): static
     {
-        $this->ifdeleted = $ifdeleted;
+        $this->deleted_at = $deleted_at;
         return $this;
     }
+
 
 }

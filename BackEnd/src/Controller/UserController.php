@@ -15,6 +15,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use App\Form\UserType;
+
 
 class UserController extends AbstractController
 {
@@ -43,11 +47,27 @@ class UserController extends AbstractController
         $this->mailer = $mailer;
 
     }
+    
+    #[Route('/users', name: 'users_index', methods: ['GET','POST'])]
+    public function index(): Response
+    {
+        $user = new User();
+        $user_form = $this->createForm(UserType::class, $user);
+        $defaultContext = [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => function ($object, $format, $context) {
+                return $object->getId();
+            },
+        ];
+        return $this->render('user/index.html.twig', [
+            'controller_name' => 'UserController',
+            'user_form' => $user_form->createView()
+        ]);
+    }
 
     #[Route('/api/users', name: 'api_list_users', methods: ['GET'])]
     public function listUsers(): JsonResponse
     {
-        $users = $this->userRepository->findBy(['ifdeleted' => 0]);
+        $users = $this->userRepository->findBy(['deleted_at' => null]);
 
         $formattedUsers = array_map(function($user) {
             return [
@@ -202,7 +222,7 @@ class UserController extends AbstractController
             return $this->json(['message' => 'User not found'], 404);
         }
 
-        $user->setIfdeleted(1);
+        $user->setDeletedAt(new \DateTime());
         $user->setUpdatedAt(new \DateTime());
 
         $this->entityManager->flush();
@@ -214,7 +234,6 @@ class UserController extends AbstractController
                 'firstName' => $user->getFirstName(),
                 'lastName' => $user->getLastName(),
                 'email' => $user->getEmail(),
-                'ifdeleted' => $user->getIfdeleted(),
                 'updatedAt' => $user->getUpdatedAt()->format('Y-m-d H:i:s'),
             ]
         ]);

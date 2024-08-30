@@ -52,7 +52,7 @@ class AppointmentType extends AbstractType
         ])
         ->add('patient', EntityType::class, [
             'class' => Patient::class,
-            'choice_label' => 'FirstName', // Assuming Patient entity has a FirstName field
+            'choice_label' => 'id_number', // Assuming Patient entity has a FirstName field
         ]);
 }
 
